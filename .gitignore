@@ -1,0 +1,15 @@
+# Build outputs
+bin/
+obj/
+.vs/
+
+# User-specific and local files
+*.user
+*.suo
+*.rar
+*.database
+*.layout
+*_Windows.settings
+
+# Data: Olist dataset (Kaggle license) - reproduced by the notebook
+data/

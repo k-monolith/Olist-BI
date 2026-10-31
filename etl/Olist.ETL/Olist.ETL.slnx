@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Development" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="../../model/Olist.Model/Olist.Model.smproj" Type="6870e480-7721-4708-bfb8-9ae898aa21b3" Id="8ce414bb-95b2-4c99-9e03-51ba72086e22">
+    <Deploy />
+  </Project>
+  <Project Path="Olist.ETL.dtproj" Type="c9674dcb-5085-4a16-b785-4c70dd1589bd">
+    <Platform Project="?" />
+  </Project>
+</Solution>

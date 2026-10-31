@@ -1,0 +1,791 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1700,
+  "model": {
+    "culture": "en-US",
+    "dataSources": [
+      {
+        "type": "structured",
+        "name": "SQL/localhost\\MSSQLSERVER01;OlistDW",
+        "connectionDetails": {
+          "protocol": "tds",
+          "address": {
+            "server": "localhost\\MSSQLSERVER01",
+            "database": "OlistDW"
+          },
+          "authentication": null,
+          "query": null
+        },
+        "credential": {
+          "AuthenticationKind": "Windows",
+          "kind": "SQL",
+          "path": "localhost\\mssqlserver01;OlistDW",
+          "Username": "desktop-sf9tsb0\\windows",
+          "EncryptConnection": false
+        }
+      }
+    ],
+    "tables": [
+      {
+        "name": "dw DimCustomer",
+        "columns": [
+          {
+            "name": "CustomerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CustomerKey"
+          },
+          {
+            "name": "CustomerUniqueId",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "CustomerUniqueId"
+          },
+          {
+            "name": "ZipCodePrefix",
+            "dataType": "string",
+            "sourceColumn": "ZipCodePrefix"
+          },
+          {
+            "name": "City",
+            "dataType": "string",
+            "sourceColumn": "City"
+          },
+          {
+            "name": "State",
+            "dataType": "string",
+            "sourceColumn": "State"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimCustomer = Source{[Schema=\"dw\",Item=\"DimCustomer\"]}[Data]",
+                "in",
+                "    dw_DimCustomer"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw FactReview",
+        "columns": [
+          {
+            "name": "ReviewKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ReviewKey"
+          },
+          {
+            "name": "ReviewId",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "ReviewId"
+          },
+          {
+            "name": "OrderId",
+            "dataType": "string",
+            "sourceColumn": "OrderId"
+          },
+          {
+            "name": "ReviewDateKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ReviewDateKey"
+          },
+          {
+            "name": "CustomerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CustomerKey"
+          },
+          {
+            "name": "ReviewScore",
+            "dataType": "int64",
+            "sourceColumn": "ReviewScore"
+          },
+          {
+            "name": "HasComment",
+            "dataType": "boolean",
+            "sourceColumn": "HasComment"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_FactReview = Source{[Schema=\"dw\",Item=\"FactReview\"]}[Data]",
+                "in",
+                "    dw_FactReview"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw FactPayment",
+        "columns": [
+          {
+            "name": "PaymentKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "PaymentKey"
+          },
+          {
+            "name": "OrderId",
+            "dataType": "string",
+            "sourceColumn": "OrderId"
+          },
+          {
+            "name": "PaymentSequential",
+            "dataType": "int64",
+            "sourceColumn": "PaymentSequential"
+          },
+          {
+            "name": "PurchaseDateKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "PurchaseDateKey"
+          },
+          {
+            "name": "CustomerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CustomerKey"
+          },
+          {
+            "name": "PaymentTypeKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "PaymentTypeKey"
+          },
+          {
+            "name": "Installments",
+            "dataType": "int64",
+            "sourceColumn": "Installments"
+          },
+          {
+            "name": "PaymentValue",
+            "dataType": "double",
+            "sourceColumn": "PaymentValue"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_FactPayment = Source{[Schema=\"dw\",Item=\"FactPayment\"]}[Data]",
+                "in",
+                "    dw_FactPayment"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Payment Value",
+            "expression": " SUM ( 'dw FactPayment'[PaymentValue] )"
+          },
+          {
+            "name": "Average Review Score",
+            "expression": " AVERAGE ( 'dw FactReview'[ReviewScore] )"
+          },
+          {
+            "name": "Comment Share",
+            "expression": " DIVIDE ( CALCULATE ( COUNTROWS ( 'dw FactReview' ), 'dw FactReview'[HasComment] = TRUE ), COUNTROWS ( 'dw FactReview' ) )"
+          }
+        ]
+      },
+      {
+        "name": "dw FactOrderItem",
+        "columns": [
+          {
+            "name": "OrderItemKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "OrderItemKey"
+          },
+          {
+            "name": "OrderId",
+            "dataType": "string",
+            "sourceColumn": "OrderId"
+          },
+          {
+            "name": "OrderItemNumber",
+            "dataType": "int64",
+            "sourceColumn": "OrderItemNumber"
+          },
+          {
+            "name": "PurchaseDateKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "PurchaseDateKey"
+          },
+          {
+            "name": "DeliveredDateKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "DeliveredDateKey"
+          },
+          {
+            "name": "EstimatedDeliveryDateKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "EstimatedDeliveryDateKey"
+          },
+          {
+            "name": "CustomerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CustomerKey"
+          },
+          {
+            "name": "CustomerGeographyKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CustomerGeographyKey"
+          },
+          {
+            "name": "SellerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "SellerKey"
+          },
+          {
+            "name": "ProductKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ProductKey"
+          },
+          {
+            "name": "OrderStatusKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "OrderStatusKey"
+          },
+          {
+            "name": "Price",
+            "dataType": "double",
+            "sourceColumn": "Price"
+          },
+          {
+            "name": "FreightValue",
+            "dataType": "double",
+            "sourceColumn": "FreightValue"
+          },
+          {
+            "name": "DeliveryDays",
+            "dataType": "int64",
+            "sourceColumn": "DeliveryDays"
+          },
+          {
+            "name": "IsLate",
+            "dataType": "boolean",
+            "sourceColumn": "IsLate"
+          },
+          {
+            "name": "HasTimelineAnomaly",
+            "dataType": "boolean",
+            "sourceColumn": "HasTimelineAnomaly"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_FactOrderItem = Source{[Schema=\"dw\",Item=\"FactOrderItem\"]}[Data]",
+                "in",
+                "    dw_FactOrderItem"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Revenue",
+            "expression": " SUM ( 'dw FactOrderItem'[Price] )"
+          },
+          {
+            "name": "Freight",
+            "expression": " SUM ( 'dw FactOrderItem'[FreightValue] )"
+          },
+          {
+            "name": "GMV",
+            "expression": " [Revenue] + [Freight]"
+          },
+          {
+            "name": "GMV Delivered",
+            "expression": " CALCULATE ( [GMV], 'dw DimOrderStatus'[OrderStatusName] = \"delivered\" )"
+          },
+          {
+            "name": "Orders",
+            "expression": " DISTINCTCOUNT ( 'dw FactOrderItem'[OrderId] )"
+          },
+          {
+            "name": "Delivered Orders",
+            "expression": " CALCULATE ( [Orders], 'dw DimOrderStatus'[OrderStatusName] = \"delivered\" )"
+          },
+          {
+            "name": "Late Rate",
+            "expression": " DIVIDE ( CALCULATE ( [Orders], FILTER ( 'dw FactOrderItem', 'dw FactOrderItem'[IsLate] = TRUE () ) ), CALCULATE ( [Orders], FILTER ( 'dw FactOrderItem', NOT ISBLANK ( 'dw FactOrderItem'[IsLate] ) ) ) )"
+          },
+          {
+            "name": "Average Order Value",
+            "expression": " DIVIDE ( [GMV Delivered], [Delivered Orders] )"
+          },
+          {
+            "name": "Average Delivery Days",
+            "expression": " AVERAGE ( 'dw FactOrderItem'[DeliveryDays] )"
+          }
+        ]
+      },
+      {
+        "name": "dw DimSeller",
+        "columns": [
+          {
+            "name": "SellerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "SellerKey"
+          },
+          {
+            "name": "SellerId",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "SellerId"
+          },
+          {
+            "name": "ZipCodePrefix",
+            "dataType": "string",
+            "sourceColumn": "ZipCodePrefix"
+          },
+          {
+            "name": "City",
+            "dataType": "string",
+            "sourceColumn": "City"
+          },
+          {
+            "name": "State",
+            "dataType": "string",
+            "sourceColumn": "State"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimSeller = Source{[Schema=\"dw\",Item=\"DimSeller\"]}[Data]",
+                "in",
+                "    dw_DimSeller"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw DimDate",
+        "dataCategory": "Time",
+        "columns": [
+          {
+            "name": "DateKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "DateKey"
+          },
+          {
+            "name": "FullDate",
+            "dataType": "dateTime",
+            "isKey": true,
+            "sourceColumn": "FullDate"
+          },
+          {
+            "name": "Year",
+            "dataType": "int64",
+            "sourceColumn": "Year"
+          },
+          {
+            "name": "Quarter",
+            "dataType": "int64",
+            "sourceColumn": "Quarter"
+          },
+          {
+            "name": "QuarterName",
+            "dataType": "string",
+            "sourceColumn": "QuarterName"
+          },
+          {
+            "name": "MonthNumber",
+            "dataType": "int64",
+            "sourceColumn": "MonthNumber"
+          },
+          {
+            "name": "MonthName",
+            "dataType": "string",
+            "sourceColumn": "MonthName",
+            "sortByColumn": "MonthNumber"
+          },
+          {
+            "name": "YearMonth",
+            "dataType": "string",
+            "sourceColumn": "YearMonth"
+          },
+          {
+            "name": "DayOfMonth",
+            "dataType": "int64",
+            "sourceColumn": "DayOfMonth"
+          },
+          {
+            "name": "DayOfWeekNumber",
+            "dataType": "int64",
+            "sourceColumn": "DayOfWeekNumber"
+          },
+          {
+            "name": "DayOfWeekName",
+            "dataType": "string",
+            "sourceColumn": "DayOfWeekName",
+            "sortByColumn": "DayOfWeekNumber"
+          },
+          {
+            "name": "IsWeekend",
+            "dataType": "boolean",
+            "sourceColumn": "IsWeekend"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimDate = Source{[Schema=\"dw\",Item=\"DimDate\"]}[Data]",
+                "in",
+                "    dw_DimDate"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw DimGeography",
+        "columns": [
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "sourceColumn": "GeographyKey"
+          },
+          {
+            "name": "ZipCodePrefix",
+            "dataType": "string",
+            "sourceColumn": "ZipCodePrefix"
+          },
+          {
+            "name": "City",
+            "dataType": "string",
+            "sourceColumn": "City"
+          },
+          {
+            "name": "State",
+            "dataType": "string",
+            "sourceColumn": "State"
+          },
+          {
+            "name": "Latitude",
+            "dataType": "double",
+            "sourceColumn": "Latitude"
+          },
+          {
+            "name": "Longitude",
+            "dataType": "double",
+            "sourceColumn": "Longitude"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimGeography = Source{[Schema=\"dw\",Item=\"DimGeography\"]}[Data]",
+                "in",
+                "    dw_DimGeography"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw DimPaymentType",
+        "columns": [
+          {
+            "name": "PaymentTypeKey",
+            "dataType": "int64",
+            "sourceColumn": "PaymentTypeKey"
+          },
+          {
+            "name": "PaymentTypeName",
+            "dataType": "string",
+            "sourceColumn": "PaymentTypeName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimPaymentType = Source{[Schema=\"dw\",Item=\"DimPaymentType\"]}[Data]",
+                "in",
+                "    dw_DimPaymentType"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw DimProduct",
+        "columns": [
+          {
+            "name": "ProductKey",
+            "dataType": "int64",
+            "sourceColumn": "ProductKey"
+          },
+          {
+            "name": "ProductId",
+            "dataType": "string",
+            "sourceColumn": "ProductId"
+          },
+          {
+            "name": "CategoryPt",
+            "dataType": "string",
+            "sourceColumn": "CategoryPt"
+          },
+          {
+            "name": "CategoryEn",
+            "dataType": "string",
+            "sourceColumn": "CategoryEn"
+          },
+          {
+            "name": "NameLength",
+            "dataType": "int64",
+            "sourceColumn": "NameLength"
+          },
+          {
+            "name": "DescriptionLength",
+            "dataType": "int64",
+            "sourceColumn": "DescriptionLength"
+          },
+          {
+            "name": "PhotosQty",
+            "dataType": "int64",
+            "sourceColumn": "PhotosQty"
+          },
+          {
+            "name": "WeightG",
+            "dataType": "int64",
+            "sourceColumn": "WeightG"
+          },
+          {
+            "name": "LengthCm",
+            "dataType": "int64",
+            "sourceColumn": "LengthCm"
+          },
+          {
+            "name": "HeightCm",
+            "dataType": "int64",
+            "sourceColumn": "HeightCm"
+          },
+          {
+            "name": "WidthCm",
+            "dataType": "int64",
+            "sourceColumn": "WidthCm"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimProduct = Source{[Schema=\"dw\",Item=\"DimProduct\"]}[Data]",
+                "in",
+                "    dw_DimProduct"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dw DimOrderStatus",
+        "columns": [
+          {
+            "name": "OrderStatusKey",
+            "dataType": "int64",
+            "sourceColumn": "OrderStatusKey"
+          },
+          {
+            "name": "OrderStatusName",
+            "dataType": "string",
+            "sourceColumn": "OrderStatusName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/localhost\\MSSQLSERVER01;OlistDW\",",
+                "    dw_DimOrderStatus = Source{[Schema=\"dw\",Item=\"DimOrderStatus\"]}[Data]",
+                "in",
+                "    dw_DimOrderStatus"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "733f5e7b-c6e2-48aa-8983-9a6a50d2bf55",
+        "fromTable": "dw FactPayment",
+        "fromColumn": "CustomerKey",
+        "toTable": "dw DimCustomer",
+        "toColumn": "CustomerKey"
+      },
+      {
+        "name": "f599f315-cbe8-4217-9228-b640fe7807e2",
+        "fromTable": "dw FactReview",
+        "fromColumn": "CustomerKey",
+        "toTable": "dw DimCustomer",
+        "toColumn": "CustomerKey"
+      },
+      {
+        "name": "7c3d8619-921f-41b1-8ec7-903590caab9c",
+        "fromTable": "dw FactReview",
+        "fromColumn": "ReviewDateKey",
+        "toTable": "dw DimDate",
+        "toColumn": "DateKey"
+      },
+      {
+        "name": "9ded8b46-84f6-40dc-b68b-e8f20d24d026",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "DeliveredDateKey",
+        "toTable": "dw DimDate",
+        "toColumn": "DateKey",
+        "isActive": false
+      },
+      {
+        "name": "b4a223c3-7ccb-4257-bc7a-2d3390a87fbe",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "EstimatedDeliveryDateKey",
+        "toTable": "dw DimDate",
+        "toColumn": "DateKey",
+        "isActive": false
+      },
+      {
+        "name": "83e9d6ae-ebea-44ae-9ecf-cddaa59f1881",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "PurchaseDateKey",
+        "toTable": "dw DimDate",
+        "toColumn": "DateKey"
+      },
+      {
+        "name": "957cc1fa-55fb-469e-9bfe-75d68d739d59",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "CustomerKey",
+        "toTable": "dw DimCustomer",
+        "toColumn": "CustomerKey"
+      },
+      {
+        "name": "972b51fe-c98b-447e-b4a9-a0100cd29be6",
+        "fromTable": "dw FactPayment",
+        "fromColumn": "PurchaseDateKey",
+        "toTable": "dw DimDate",
+        "toColumn": "DateKey"
+      },
+      {
+        "name": "a1c48d0b-ef84-46af-9eaf-58915a070c58",
+        "fromTable": "dw FactPayment",
+        "fromColumn": "PaymentTypeKey",
+        "toTable": "dw DimPaymentType",
+        "toColumn": "PaymentTypeKey"
+      },
+      {
+        "name": "e9f16634-d36e-4501-8484-2161428d6043",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "CustomerGeographyKey",
+        "toTable": "dw DimGeography",
+        "toColumn": "GeographyKey"
+      },
+      {
+        "name": "639c6125-d8e4-4837-8d68-3a517d2a9e04",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "ProductKey",
+        "toTable": "dw DimProduct",
+        "toColumn": "ProductKey"
+      },
+      {
+        "name": "3c0346e2-a860-44bf-8ff2-4723cd840f6d",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "SellerKey",
+        "toTable": "dw DimSeller",
+        "toColumn": "SellerKey"
+      },
+      {
+        "name": "676774f8-6316-4c6c-9549-e5273bee7b10",
+        "fromTable": "dw FactOrderItem",
+        "fromColumn": "OrderStatusKey",
+        "toTable": "dw DimOrderStatus",
+        "toColumn": "OrderStatusKey"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "ClientCompatibilityLevel",
+        "value": "800"
+      }
+    ]
+  },
+  "id": "SemanticModel"
+}
