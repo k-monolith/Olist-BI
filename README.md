@@ -47,8 +47,6 @@ Star schema in `OlistDW`:
 | FactPayment | one payment record | 103,886 |
 | FactReview | one (review, order) pair | 99,224 |
 
-7 dimensions (Date, Customer, Seller, Product, Geography, OrderStatus, PaymentType), surrogate keys, business keys under UNIQUE constraints, an Unknown member (key −1) in every dimension so no fact row is ever lost, and a smart date key (yyyymmdd). 13 foreign-key constraints are enforced during the bulk load.
-
 ## Validated figures
 
 Every figure is reproduced identically by the warehouse (`sql/09_etl_validation.sql`), the deployed Tabular model and the Power BI report:
@@ -63,10 +61,6 @@ Every figure is reproduced identically by the warehouse (`sql/09_etl_validation.
 | Payments total | R$ 15,959,706 |
 | Average review score | 4.09 / 5 |
 | Orders with timeline anomaly (flagged) | 1,359 |
-
-## The 13 DAX measures
-
-Revenue, Freight, GMV, GMV Delivered, Orders, Delivered Orders, Late Rate, Average Order Value, Average Delivery Days (FactOrderItem); Payment Value, Average Installments (FactPayment); Average Review Score, Comment Share (FactReview). Each one was accepted only after matching the SQL validation.
 
 ## Reproduce
 
